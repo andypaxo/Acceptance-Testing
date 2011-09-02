@@ -6,8 +6,8 @@ namespace AcceptanceTesting
     class Program
     {
         private const string input =
-@"Given I want to do things
-Then things should be done";
+@"Given I have logged in
+Then I should see a failed login";
 
         static void Main(string[] args)
         {

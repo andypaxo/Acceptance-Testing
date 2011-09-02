@@ -30,6 +30,11 @@ namespace AcceptanceTesting
             return new AssemblyLoader(methods);
         }
 
+        public IEnumerable<string> AllMethods()
+        {
+            return methods.Keys;
+        }
+
         public bool FindMethod(string name)
         {
             return methods.ContainsKey(name);

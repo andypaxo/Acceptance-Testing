@@ -9,7 +9,7 @@ namespace AcceptanceTesting
         public AssemblyLoader AssemblyLoader { get; set; }
         private StreamWriter output;
 
-        private static readonly string[] StepTokens = new[] {"Given", "When"};
+        private static readonly string[] StepTokens = new[] { "Given", "When", "Then" };
         private const string KeywordExtractor = @"^(?<keyword>[\S]*)";
 
         public void Run(string input)
@@ -21,19 +21,30 @@ namespace AcceptanceTesting
 
         private void ChurnInput(string input)
         {
+            DisplayLoadedMethods();
+
             foreach (var line in input.Split('\n'))
                 ProcessLine(line);
         }
 
+        private void DisplayLoadedMethods()
+        {
+            output.WriteLine("Methods found:");
+            foreach (var method in AssemblyLoader.AllMethods())
+                output.WriteLine(method);
+            output.WriteLine();
+        }
+
         private void ProcessLine(string line)
         {
+            line = line.Trim();
             var keyword = Regex.Match(line, KeywordExtractor).Groups["keyword"].Value;
             var step = line.Substring(keyword.Length + 1);
 
             if (AssemblyLoader.FindMethod(step))
                 output.WriteLine("{0} {1}", AssemblyLoader.Ok(step) ? "/" : "X", line);
             else
-                output.WriteLine("- {0}", line);
+                output.WriteLine("- " + step + " not found");
         }
     }
 }
