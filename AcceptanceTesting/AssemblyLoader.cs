@@ -40,17 +40,33 @@ namespace AcceptanceTesting
             return methods.ContainsKey(name);
         }
 
-        public bool Ok(string step)
+        public StepResult ResultOf(string step)
         {
             try
             {
                 methods[step].Invoke();
-                return true;
+                return StepResult.Ok;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return StepResult.Fail(ex.Message);
             }
+        }
+    }
+
+    public class StepResult
+    {
+        public bool Passed { get; private set; }
+        public string Message { get; private set; }
+
+        public static readonly StepResult Ok = new StepResult {Passed = true};
+        public static StepResult Fail(string message)
+        {
+            return new StepResult
+            {
+                Passed = false,
+                Message = message
+            };
         }
     }
 
