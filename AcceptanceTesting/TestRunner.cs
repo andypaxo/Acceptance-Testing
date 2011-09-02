@@ -47,7 +47,7 @@ namespace AcceptanceTesting
                 var result = AssemblyLoader.ResultOf(step);
                 allPassed &= result.Passed;
                 output.WriteLine("{0} {1}", result.Passed ? "/" : "X", line);
-                output.WriteLine("  {0}", result.Message);
+                output.WriteLine("  {0}", result.Exception);
             }
             else
             {

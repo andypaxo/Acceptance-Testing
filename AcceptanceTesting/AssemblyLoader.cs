@@ -49,7 +49,7 @@ namespace AcceptanceTesting
             }
             catch (Exception ex)
             {
-                return StepResult.Fail(ex.Message);
+                return StepResult.Fail(ex);
             }
         }
     }
@@ -57,15 +57,15 @@ namespace AcceptanceTesting
     public class StepResult
     {
         public bool Passed { get; private set; }
-        public string Message { get; private set; }
+        public Exception Exception { get; private set; }
 
         public static readonly StepResult Ok = new StepResult {Passed = true};
-        public static StepResult Fail(string message)
+        public static StepResult Fail(Exception exception)
         {
             return new StepResult
             {
                 Passed = false,
-                Message = message
+                Exception = exception
             };
         }
     }
