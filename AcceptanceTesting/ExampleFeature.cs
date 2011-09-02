@@ -1,16 +1,18 @@
+using System;
+
 namespace AcceptanceTesting
 {
     [FeatureDefinition]
     public class ExampleFeature
     {
-        public void this_is_a_feature()
+        public void I_want_to_do_things()
         {
-            
+            Console.WriteLine("I did things!");
         }
 
-        public void this_is_a_feature_also()
+        public void things_should_be_done()
         {
-            
+            Console.WriteLine("Things were done!");
         }
     }
 }

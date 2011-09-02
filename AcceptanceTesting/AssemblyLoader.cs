@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -6,23 +7,65 @@ namespace AcceptanceTesting
 {
     public class AssemblyLoader
     {
-        private readonly IEnumerable<string> methodNames;
+        private readonly Dictionary<string, MethodDefinition> methods;
 
-        private AssemblyLoader(IEnumerable<string> methodNames)
+        private AssemblyLoader(Dictionary<string, MethodDefinition> methods)
         {
-            this.methodNames = methodNames;
-            foreach (var methodName in methodNames)
-                System.Console.WriteLine(methodName);
+            this.methods = methods;
         }
 
         public static AssemblyLoader CreateFrom(Assembly assembly)
         {
-            var methodNames = assembly.GetExportedTypes()
-                .Where(x => x.GetCustomAttributes(typeof (FeatureDefinitionAttribute), true).Length > 0)
-                .SelectMany(x => x.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
-                .Select(x => x.Name);
+            var types =
+                from type in assembly.GetExportedTypes()
+                where type.GetCustomAttributes(typeof (FeatureDefinitionAttribute), true).Length > 0
+                select Activator.CreateInstance(type);
 
-            return new AssemblyLoader(methodNames);
+            var methods = (
+                from type in types
+                from typeMethod in type.GetType().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                select new MethodDefinition(type, typeMethod))
+                .ToDictionary(x => x.Name);
+
+            return new AssemblyLoader(methods);
+        }
+
+        public bool FindMethod(string name)
+        {
+            return methods.ContainsKey(name);
+        }
+
+        public bool Ok(string step)
+        {
+            try
+            {
+                methods[step].Invoke();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    internal class MethodDefinition
+    {
+        private readonly object instance;
+        private readonly MethodInfo method;
+
+        public string Name { get; private set; }
+
+        public MethodDefinition(object instance, MethodInfo method)
+        {
+            this.instance = instance;
+            this.method = method;
+            Name = method.Name.Replace('_', ' ');
+        }
+
+        public void Invoke()
+        {
+            method.Invoke(instance, null);
         }
     }
 }

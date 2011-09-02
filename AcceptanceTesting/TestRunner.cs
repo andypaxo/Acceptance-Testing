@@ -28,9 +28,12 @@ namespace AcceptanceTesting
         private void ProcessLine(string line)
         {
             var keyword = Regex.Match(line, KeywordExtractor).Groups["keyword"].Value;
-            var prose = line.Substring(keyword.Length + 1);
+            var step = line.Substring(keyword.Length + 1);
 
-            output.WriteLine("{0}:{1}", keyword, prose);
+            if (AssemblyLoader.FindMethod(step))
+                output.WriteLine("{0} {1}", AssemblyLoader.Ok(step) ? "/" : "X", line);
+            else
+                output.WriteLine("- {0}", line);
         }
     }
 }
