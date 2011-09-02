@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace AcceptanceTesting
 {
@@ -12,7 +13,8 @@ Then things should be done";
         {
             var testRunner = new TestRunner
             {
-                OutputStream = Console.OpenStandardOutput()
+                OutputStream = Console.OpenStandardOutput(),
+                AssemblyLoader = AssemblyLoader.CreateFrom(Assembly.GetExecutingAssembly())
             };
             testRunner.Run(input);
 

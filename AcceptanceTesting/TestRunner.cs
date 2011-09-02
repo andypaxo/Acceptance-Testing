@@ -5,7 +5,8 @@ namespace AcceptanceTesting
 {
     public class TestRunner
     {
-        public Stream OutputStream;
+        public Stream OutputStream { get; set; }
+        public AssemblyLoader AssemblyLoader { get; set; }
         private StreamWriter output;
 
         private static readonly string[] StepTokens = new[] {"Given", "When"};
