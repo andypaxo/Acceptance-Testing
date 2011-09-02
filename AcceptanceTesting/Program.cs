@@ -11,14 +11,17 @@ Then things should be done";
 
         static void Main(string[] args)
         {
+            var assembly = args.Length > 0
+                ? Assembly.LoadFrom(args[0])
+                : Assembly.GetExecutingAssembly();
+            var assemblyLoader = AssemblyLoader.CreateFrom(assembly);
+
             var testRunner = new TestRunner
             {
                 OutputStream = Console.OpenStandardOutput(),
-                AssemblyLoader = AssemblyLoader.CreateFrom(Assembly.GetExecutingAssembly())
+                AssemblyLoader = assemblyLoader
             };
             testRunner.Run(input);
-
-            Console.ReadKey();
         }
     }
 }
