@@ -11,9 +11,7 @@ Then I should see a failed login";
 
         static void Main(string[] args)
         {
-            var assemblyLoader  = args.Length > 0
-                ? new AssemblyLoader().InitializeWith(args[0])
-                : new AssemblyLoader().InitializeWith(Assembly.GetExecutingAssembly());
+            var assemblyLoader  = new AssemblyLoader().InitializeWith(args[0]);
 
             var testRunner = new TestRunner
             {
@@ -21,6 +19,8 @@ Then I should see a failed login";
                 AssemblyLoader = assemblyLoader
             };
             testRunner.Run(input);
+
+            Console.ReadLine();
         }
     }
 }

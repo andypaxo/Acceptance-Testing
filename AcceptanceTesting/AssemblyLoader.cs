@@ -11,13 +11,6 @@ namespace AcceptanceTesting
     {
         private AssemblyLocator locator;
 
-        public AssemblyLoader InitializeWith(Assembly assembly)
-        {
-            locator = new AssemblyLocator();
-            locator.Load(assembly);
-            return this;
-        }
-
         public AssemblyLoader InitializeWith(string path)
         {
             var appDomainSetup = new AppDomainSetup
@@ -55,10 +48,10 @@ namespace AcceptanceTesting
     public class StepResult
     {
         public bool Passed { get; private set; }
-        public Exception Exception { get; private set; }
+        public string Exception { get; private set; }
 
         public static readonly StepResult Ok = new StepResult {Passed = true};
-        public static StepResult Fail(Exception exception)
+        public static StepResult Fail(string exception)
         {
             return new StepResult
             {
@@ -119,7 +112,8 @@ namespace AcceptanceTesting
             }
             catch (Exception ex)
             {
-                return StepResult.Fail(ex);
+                var exception = (ex.InnerException ?? ex).ToString();
+                return StepResult.Fail(exception);
             }
         }
 
