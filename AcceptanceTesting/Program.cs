@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Reflection;
+using System.IO;
 
 namespace AcceptanceTesting
 {
     class Program
     {
-        private const string input =
-@"Given I have logged in
-Then I should see a failed login";
-
         static void Main(string[] args)
         {
             var assemblyLoader  = new AssemblyLoader().InitializeWith(args[0]);
+
+            string input;
+            using (var reader = new StreamReader(args[1]))
+                input = reader.ReadToEnd();
 
             var testRunner = new TestRunner
             {
