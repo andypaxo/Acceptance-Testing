@@ -6,7 +6,7 @@ namespace ExampleTestSuite
     [FeatureDefinition]
     public class ExampleFeature
     {
-        public void I_have_logged_in()
+        public void I_have_logged_in_with_the_wrong_name()
         {
         }
 
