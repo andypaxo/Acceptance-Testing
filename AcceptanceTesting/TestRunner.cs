@@ -1,13 +1,11 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AcceptanceTesting
 {
     public class TestRunner
     {
-        public Stream OutputStream { get; set; }
+        public Logger Output { get; set; }
         public AssemblyLoader AssemblyLoader { get; set; }
-        private StreamWriter output;
         public bool AllPassed { get; private set; }
 
         private static readonly string[] StepTokens = new[] { "Given", "When", "Then" };
@@ -20,25 +18,8 @@ namespace AcceptanceTesting
 
         public void Run(string input)
         {
-            output = new StreamWriter(OutputStream);
-            using (output)
-                ChurnInput(input);
-        }
-
-        private void ChurnInput(string input)
-        {
-            DisplayLoadedMethods();
-
             foreach (var line in input.Split('\n'))
                 ProcessLine(line);
-        }
-
-        private void DisplayLoadedMethods()
-        {
-            output.WriteLine("Methods found:");
-            foreach (var method in AssemblyLoader.AllMethods())
-                output.WriteLine(method);
-            output.WriteLine();
         }
 
         private void ProcessLine(string line)
@@ -47,17 +28,15 @@ namespace AcceptanceTesting
             var keyword = Regex.Match(line, KeywordExtractor).Groups["keyword"].Value;
             var step = line.Substring(keyword.Length + 1);
 
-            if (AllPassed && AssemblyLoader.FindMethod(step))
+            if (AllPassed)
             {
                 var result = AssemblyLoader.ResultOf(step);
                 AllPassed &= result.Passed;
-                output.WriteLine("{0} {1}", result.Passed ? "/" : "X", line);
-                if (!string.IsNullOrEmpty(result.Exception))
-                    output.WriteLine("  {0}", result.Exception);
+                Output.WriteResult(line, result);
             }
             else
             {
-                output.WriteLine("- " + line);
+                Output.WriteResult(line, StepResult.Ignored);
             }
         }
     }

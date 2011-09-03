@@ -22,20 +22,15 @@ namespace AcceptanceTesting
             locator = ((AssemblyLocator)
                 appDomain.CreateInstanceAndUnwrap(
                     Assembly.GetExecutingAssembly().FullName,
-                    typeof(AssemblyLocator).FullName));
+                    typeof (AssemblyLocator).FullName));
             locator.Load(path);
-            
+
             return this;
         }
 
         public IEnumerable<string> AllMethods()
         {
             return locator.AllMethods();
-        }
-
-        public bool FindMethod(string name)
-        {
-            return locator.FindMethod(name);
         }
 
         public StepResult ResultOf(string step)
@@ -51,6 +46,9 @@ namespace AcceptanceTesting
         public string Exception { get; private set; }
 
         public static readonly StepResult Ok = new StepResult {Passed = true};
+        public static readonly StepResult NotFound = new StepResult {Passed = false};
+        public static readonly StepResult Ignored = new StepResult {Passed = false};
+
         public static StepResult Fail(string exception)
         {
             return new StepResult
@@ -83,12 +81,13 @@ namespace AcceptanceTesting
         {
             var types =
                 from type in loadedAssembly.GetExportedTypes()
-                where type.GetCustomAttributes(typeof(FeatureDefinitionAttribute), true).Length > 0
+                where type.GetCustomAttributes(typeof (FeatureDefinitionAttribute), true).Length > 0
                 select Activator.CreateInstance(type);
 
             methods = (
                 from type in types
-                from typeMethod in type.GetType().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                from typeMethod in
+                    type.GetType().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public)
                 select new MethodDefinition(type, typeMethod))
                 .ToDictionary(x => x.Name);
         }
@@ -98,13 +97,11 @@ namespace AcceptanceTesting
             return methods.Keys.ToArray();
         }
 
-        public bool FindMethod(string name)
-        {
-            return methods.ContainsKey(name);
-        }
-
         public StepResult ResultOf(string step)
         {
+            if (!methods.ContainsKey(step))
+                return StepResult.NotFound;
+
             try
             {
                 methods[step].Invoke();
