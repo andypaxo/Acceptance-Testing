@@ -5,7 +5,7 @@ namespace AcceptanceTesting
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var assemblyLoader  = new AssemblyLoader().InitializeWith(args[0]);
 
@@ -21,6 +21,8 @@ namespace AcceptanceTesting
             testRunner.Run(input);
 
             Console.ReadLine();
+
+            return testRunner.AllPassed ? 0 : 1;
         }
     }
 }

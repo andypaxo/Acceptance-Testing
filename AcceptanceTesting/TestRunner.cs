@@ -8,10 +8,15 @@ namespace AcceptanceTesting
         public Stream OutputStream { get; set; }
         public AssemblyLoader AssemblyLoader { get; set; }
         private StreamWriter output;
-        private bool allPassed = true;
+        public bool AllPassed { get; private set; }
 
         private static readonly string[] StepTokens = new[] { "Given", "When", "Then" };
         private const string KeywordExtractor = @"^(?<keyword>[\S]*)";
+
+        public TestRunner()
+        {
+            AllPassed = true;
+        }
 
         public void Run(string input)
         {
@@ -42,10 +47,10 @@ namespace AcceptanceTesting
             var keyword = Regex.Match(line, KeywordExtractor).Groups["keyword"].Value;
             var step = line.Substring(keyword.Length + 1);
 
-            if (allPassed && AssemblyLoader.FindMethod(step))
+            if (AllPassed && AssemblyLoader.FindMethod(step))
             {
                 var result = AssemblyLoader.ResultOf(step);
-                allPassed &= result.Passed;
+                AllPassed &= result.Passed;
                 output.WriteLine("{0} {1}", result.Passed ? "/" : "X", line);
                 if (!string.IsNullOrEmpty(result.Exception))
                     output.WriteLine("  {0}", result.Exception);
