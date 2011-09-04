@@ -1,2 +1,3 @@
-﻿Given I have logged in with the wrong name
-Then I should see a failed login
+﻿Given something easy has happened
+And something more difficult has happened
+Then it should fail because "The task was too difficult"
