@@ -28,11 +28,6 @@ namespace AcceptanceTesting
             return this;
         }
 
-        public IEnumerable<string> AllMethods()
-        {
-            return analyzer.AllMethods();
-        }
-
         public StepResult ResultOf(string step)
         {
             return analyzer.ResultOf(step);
@@ -42,7 +37,7 @@ namespace AcceptanceTesting
         private class AssemblyAnalyzer : MarshalByRefObject
         {
             private Assembly loadedAssembly;
-            private Dictionary<string, MethodDefinition> methods;
+            private IEnumerable<MethodDefinition> methods;
 
             public void Load(string assemblyPath)
             {
@@ -69,22 +64,18 @@ namespace AcceptanceTesting
                         type.GetType().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly |
                             BindingFlags.Public)
                     select new MethodDefinition(type, typeMethod))
-                    .ToDictionary(x => x.Name);
-            }
-
-            public IEnumerable<string> AllMethods()
-            {
-                return methods.Keys.ToArray();
+                    .ToList();
             }
 
             public StepResult ResultOf(string step)
             {
-                if (!methods.ContainsKey(step))
+                var method = methods.FirstOrDefault(x => x.Matches(step));
+                if (method == null)
                     return StepResult.NotFound;
 
                 try
                 {
-                    methods[step].Invoke();
+                    method.Invoke();
                     return StepResult.Ok;
                 }
                 catch (Exception ex)
@@ -112,6 +103,11 @@ namespace AcceptanceTesting
             public void Invoke()
             {
                 method.Invoke(instance, null);
+            }
+
+            public bool Matches(string step)
+            {
+                return Name == step;
             }
         }
     }
