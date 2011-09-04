@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace AcceptanceTesting
@@ -8,18 +10,46 @@ namespace AcceptanceTesting
         private readonly object instance;
         private readonly MethodInfo method;
         private readonly Regex name;
+        private ParameterInfo[] parameters;
 
         public MethodDefinition(object instance, MethodInfo method)
         {
             this.instance = instance;
             this.method = method;
 
-            name = new Regex(method.Name.Replace('_', ' '));
+            name = new Regex(GetPattern(method));
         }
 
-        public void Invoke()
+        private string GetPattern(MethodInfo method)
         {
-            method.Invoke(instance, null);
+            var words = method.Name.Split('_');
+            parameters = method.GetParameters();
+
+            foreach (var parameter in parameters)
+            {
+                var paramLocation = Array.IndexOf(words, parameter.Name);
+                if (paramLocation >= 0)
+                    words[paramLocation] = string.Format("(?<{0}>'[^']*')", parameter.Name);
+            }
+
+            return string.Join(" ", words);
+        }
+
+        public void Invoke(string step)
+        {
+            var invocationParameters = parameters.Length == 0
+            ? null
+            : GetParametersFrom(step);
+            method.Invoke(instance, invocationParameters);
+        }
+
+        private object[] GetParametersFrom(string step)
+        {
+            var match = name.Match(step);
+            return (
+            from parameter in parameters
+            select match.Groups[parameter.Name].Value
+            ).ToArray();
         }
 
         public bool Matches(string step)

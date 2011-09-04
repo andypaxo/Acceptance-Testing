@@ -75,7 +75,7 @@ namespace AcceptanceTesting
 
                 try
                 {
-                    method.Invoke();
+                    method.Invoke(step);
                     return StepResult.Ok;
                 }
                 catch (Exception ex)
