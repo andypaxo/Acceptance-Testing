@@ -34,13 +34,9 @@ namespace AcceptanceTesting
 
         private static bool RunTests(Logger output, AssemblyLoader assemblyLoader, string input)
         {
-            var testRunner = new TestRunner
-            {
-                Output = output,
-                AssemblyLoader = assemblyLoader
-            };
+            var testRunner = new TestRunner(output, assemblyLoader);
             testRunner.Run(input);
-
+            
             return testRunner.AllPassed;
         }
     }

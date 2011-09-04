@@ -1,19 +1,18 @@
-﻿using System.Text.RegularExpressions;
-
-namespace AcceptanceTesting
+﻿namespace AcceptanceTesting
 {
     public class TestRunner
     {
-        public Logger Output { get; set; }
-        public AssemblyLoader AssemblyLoader { get; set; }
+        private readonly AssemblyLoader assemblyLoader;
+        private readonly Logger output;
+        private readonly StepProcessor processor;
         public bool AllPassed { get; private set; }
 
-        private static readonly string[] StepTokens = new[] { "Given", "When", "Then" };
-        private const string KeywordExtractor = @"^(?<keyword>[\S]*)";
-
-        public TestRunner()
+        public TestRunner(Logger output, AssemblyLoader assemblyLoader)
         {
             AllPassed = true;
+            this.output = output;
+            this.assemblyLoader = assemblyLoader;
+            processor = new StepProcessor(this);
         }
 
         public void Run(string input)
@@ -25,18 +24,28 @@ namespace AcceptanceTesting
         private void ProcessLine(string line)
         {
             line = line.Trim();
-            var keyword = Regex.Match(line, KeywordExtractor).Groups["keyword"].Value;
-            var step = line.Substring(keyword.Length + 1);
+            if (line.Length > 0)
+                processor.Process(line);
+        }
 
+        [Processor("Scenario:")]
+        private void StartScenario(string step)
+        {
+            AllPassed = true;
+        }
+
+        [Processor("Given", "And", "When", "Then")]
+        private void ProcessStep(string step)
+        {
             if (AllPassed)
             {
-                var result = AssemblyLoader.ResultOf(step);
+                var result = assemblyLoader.ResultOf(step);
                 AllPassed &= (result.Status == StepStatus.Passed);
-                Output.WriteResult(line, result);
+                output.WriteResult(step, result);
             }
             else
             {
-                Output.WriteResult(line, StepResult.Ignored);
+                output.WriteResult(step, StepResult.Ignored);
             }
         }
     }
