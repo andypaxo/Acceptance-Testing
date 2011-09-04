@@ -85,30 +85,5 @@ namespace AcceptanceTesting
                 }
             }
         }
-
-        private class MethodDefinition
-        {
-            private readonly object instance;
-            private readonly MethodInfo method;
-
-            public string Name { get; private set; }
-
-            public MethodDefinition(object instance, MethodInfo method)
-            {
-                this.instance = instance;
-                this.method = method;
-                Name = method.Name.Replace('_', ' ');
-            }
-
-            public void Invoke()
-            {
-                method.Invoke(instance, null);
-            }
-
-            public bool Matches(string step)
-            {
-                return Name == step;
-            }
-        }
     }
 }
