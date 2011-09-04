@@ -29,9 +29,10 @@
         }
 
         [Processor("Scenario:")]
-        private void StartScenario(string step)
+        private void StartScenario(string scenarioName)
         {
             AllPassed = true;
+            output.WriteScenarioStart(scenarioName);
         }
 
         [Processor("Given", "And", "When", "Then")]

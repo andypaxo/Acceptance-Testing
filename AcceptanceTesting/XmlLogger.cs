@@ -8,6 +8,7 @@ namespace AcceptanceTesting
     public class XmlLogger : Logger
     {
         private XmlTextWriter xmlStream;
+        private bool inScenario;
 
         public XmlLogger()
         {
@@ -30,6 +31,21 @@ namespace AcceptanceTesting
             if (result.Exception != null)
                 xmlStream.WriteElementString("exception", result.Exception);
             xmlStream.WriteEndElement();
+        }
+
+        public override void WriteScenarioStart(string scenarioName)
+        {
+            EndScenario();
+            xmlStream.WriteStartElement("scenario");
+            xmlStream.WriteAttributeString("name", scenarioName);
+            inScenario = true;
+        }
+
+        private void EndScenario()
+        {
+            if (inScenario)
+                xmlStream.WriteEndElement();
+            inScenario = false;
         }
 
         public override void Dispose()

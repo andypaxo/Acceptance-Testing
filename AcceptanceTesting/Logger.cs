@@ -7,6 +7,7 @@ namespace AcceptanceTesting
     public abstract class Logger : IDisposable
     {
         public abstract void WriteResult(string line, StepResult result);
+        public abstract void WriteScenarioStart(string scenarioName);
         public abstract void Dispose();
 
         public static Logger GetLogger(string name)

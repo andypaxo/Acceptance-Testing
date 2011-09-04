@@ -19,6 +19,13 @@ namespace AcceptanceTesting
                 Console.WriteLine(result.Exception);
         }
 
+        public override void WriteScenarioStart(string scenarioName)
+        {
+            Console.WriteLine();
+            Console.WriteLine(scenarioName);
+            Console.WriteLine(new string('-', scenarioName.Length));
+        }
+
         public override void Dispose()
         {
         }
