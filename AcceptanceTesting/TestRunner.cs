@@ -31,7 +31,7 @@ namespace AcceptanceTesting
             if (AllPassed)
             {
                 var result = AssemblyLoader.ResultOf(step);
-                AllPassed &= result.Passed;
+                AllPassed &= (result.Status == StepStatus.Passed);
                 Output.WriteResult(line, result);
             }
             else

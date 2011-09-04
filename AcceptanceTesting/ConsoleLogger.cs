@@ -8,10 +8,10 @@ namespace AcceptanceTesting
         public override void WriteResult(string line, StepResult result)
         {
             var marker =
-                result.Exception != null ? 'X' :
-                result == StepResult.Ok ? 'o' :
-                result == StepResult.NotFound ? '?' :
-                result == StepResult.Ignored ? '-' :
+                result.Status == StepStatus.Failed  ? 'X' :
+                result.Status == StepStatus.Passed ? 'o' :
+                result.Status == StepStatus.NotFound ? '?' :
+                result.Status == StepStatus.Ignored ? '-' :
                 '!';
 
             Console.WriteLine("{0} {1}", marker, line);

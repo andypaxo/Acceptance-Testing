@@ -22,12 +22,7 @@ namespace AcceptanceTesting
 
         public override void WriteResult(string line, StepResult result)
         {
-            var status =
-                result.Exception != null ? "fail" :
-                result == StepResult.Ok ? "pass" :
-                result == StepResult.NotFound ? "notfound" :
-                result == StepResult.Ignored ? "ignored" :
-                "unknown";
+            var status = result.Status.ToString().ToLower();
 
             xmlStream.WriteStartElement("result");
             xmlStream.WriteAttributeString("status", status);
