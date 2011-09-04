@@ -33,6 +33,11 @@ namespace AcceptanceTesting
             return analyzer.ResultOf(step);
         }
 
+        public void RunScenarioSetup()
+        {
+            analyzer.RunScenarioSetup();
+        }
+
         [Serializable]
         private class AssemblyAnalyzer : MarshalByRefObject
         {
@@ -83,6 +88,12 @@ namespace AcceptanceTesting
                     var exception = (ex.InnerException ?? ex).ToString();
                     return StepResult.Fail(exception);
                 }
+            }
+
+            public void RunScenarioSetup()
+            {
+                foreach(var method in methods.Where(x => x.IsScenarioSetup))
+                    method.Invoke("");
             }
         }
     }

@@ -7,6 +7,8 @@ namespace AcceptanceTesting
 {
     internal class MethodDefinition
     {
+        public bool IsScenarioSetup { get; private set; }
+
         private readonly object instance;
         private readonly MethodInfo method;
         private readonly Regex name;
@@ -17,13 +19,22 @@ namespace AcceptanceTesting
             this.instance = instance;
             this.method = method;
 
-            name = new Regex(GetPattern(method));
+            IsScenarioSetup = method.GetCustomAttributes(typeof(ScenarioSetupAttribute), true).Length > 0;
+            if (!IsScenarioSetup)
+            {
+                parameters = method.GetParameters();
+                name = new Regex(GetPattern(method));
+            }
+            else
+            {
+                parameters = new ParameterInfo[0];
+                name = null;
+            }
         }
 
         private string GetPattern(MethodInfo method)
         {
             var words = method.Name.Split('_');
-            parameters = method.GetParameters();
 
             foreach (var parameter in parameters)
             {
@@ -54,7 +65,7 @@ namespace AcceptanceTesting
 
         public bool Matches(string step)
         {
-            return name.IsMatch(step);
+            return name != null && name.IsMatch(step);
         }
     }
 }

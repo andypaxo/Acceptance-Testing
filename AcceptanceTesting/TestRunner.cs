@@ -32,6 +32,7 @@
         private void StartScenario(string scenarioName)
         {
             AllPassed = true;
+            assemblyLoader.RunScenarioSetup();
             output.WriteScenarioStart(scenarioName);
         }
 
