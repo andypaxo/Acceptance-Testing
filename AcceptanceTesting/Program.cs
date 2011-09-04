@@ -6,10 +6,14 @@ namespace AcceptanceTesting
     {
         static int Main(string[] args)
         {
-            var assemblyLoader = new AssemblyLoader().InitializeWith(args[0]);
-            var input = GetInput(args[1]);
-            
-            using (var output = new ConsoleLogger())
+            var assemblyUnderTest = args[0];
+            var inputFile = args[1];
+            var outputType = args[2];
+
+            var assemblyLoader = new AssemblyLoader().InitializeWith(assemblyUnderTest);
+            var input = GetInput(inputFile);
+
+            using (var output = Logger.GetLogger(outputType))
                 return RunTests(output, assemblyLoader, input) ? 0 : 1;
         }
 

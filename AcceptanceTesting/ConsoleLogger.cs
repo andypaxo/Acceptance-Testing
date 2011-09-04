@@ -2,9 +2,10 @@ using System;
 
 namespace AcceptanceTesting
 {
+    [LoggerName("console")]
     public class ConsoleLogger : Logger
     {
-        public void WriteResult(string line, StepResult result)
+        public override void WriteResult(string line, StepResult result)
         {
             var marker =
                 result.Exception != null ? 'X' :
@@ -18,7 +19,7 @@ namespace AcceptanceTesting
                 Console.WriteLine(result.Exception);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Console.ReadLine();
         }
