@@ -21,7 +21,6 @@ namespace AcceptanceTesting
 
         public override void Dispose()
         {
-            Console.ReadLine();
         }
     }
 }

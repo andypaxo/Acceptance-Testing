@@ -9,12 +9,19 @@ namespace AcceptanceTesting
             var assemblyUnderTest = args[0];
             var inputFile = args[1];
             var outputType = args[2];
+            var interactive = args.Length > 3 && args[3] == "interactive";
 
             var assemblyLoader = new AssemblyLoader().InitializeWith(assemblyUnderTest);
             var input = GetInput(inputFile);
 
+            int result;
             using (var output = Logger.GetLogger(outputType))
-                return RunTests(output, assemblyLoader, input) ? 0 : 1;
+                result = RunTests(output, assemblyLoader, input) ? 0 : 1;
+
+            if (interactive)
+                System.Console.ReadKey();
+
+            return result;
         }
 
         private static string GetInput(string filename)

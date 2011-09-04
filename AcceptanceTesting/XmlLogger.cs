@@ -35,13 +35,14 @@ namespace AcceptanceTesting
         public override void Dispose()
         {
             if (xmlStream != null)
-            {
-                xmlStream.WriteEndElement();
-                xmlStream.WriteEndDocument();
-                xmlStream.Close();
-            }
+                Close();
+        }
 
-            Console.ReadLine();
+        private void Close()
+        {
+            xmlStream.WriteEndElement();
+            xmlStream.WriteEndDocument();
+            xmlStream.Close();
         }
     }
 }
