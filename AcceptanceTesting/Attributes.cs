@@ -7,4 +7,10 @@ namespace AcceptanceTesting
     {
         
     }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class ScenarioSetupAttribute : Attribute
+    {
+    
+    }
 }
